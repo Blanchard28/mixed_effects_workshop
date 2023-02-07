@@ -125,8 +125,8 @@ data.preds = expand.grid(age.s = unique(anes$age.s),
 data.preds$preds = predict(rs.fit.bob,
                            newdata = data.preds)
 
-ggplot(data.preds, aes(x = age.s, y = preds)) +
-    geom_line(aes(color = state)) +
+ggplot(data.preds, aes(x = age.s, y = preds, group = state)) +
+    geom_line(color = "cyan4") +
     labs(x = "Age (z-score)", y = "Predicted Democratic FT score") +
     theme_classic() +
     theme(legend.position = "none")
@@ -160,9 +160,8 @@ summary(rs.fit.bob.uncorr,
 data.preds$preds.uncorr = predict(rs.fit.bob.uncorr,
                                   newdata = data.preds)
 
-ggplot(data.preds, aes(x = age.s, y = preds.uncorr)) +
-    geom_line(aes(color = state)) +
-    scale_color_manual(values = viridis(5)) +
+ggplot(data.preds, aes(x = age.s, y = preds.uncorr, group = state)) +
+    geom_line(color = "cyan4") +
     labs(x = "Age (z-score)", y = "Predicted Democratic FT score") +
     theme_classic() +
     theme(legend.position = "none")
