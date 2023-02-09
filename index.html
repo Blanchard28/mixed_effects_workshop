@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Mixed-Effects Models with R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Maxime Blanchard | CSDC Methods Workshop" />
+    <script src="index_files/header-attrs/header-attrs.js"></script>
+    <link href="index_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="index_files/panelset/panelset.js"></script>
+    <link href="index_files/xaringanExtra-extra-styles/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Mixed-Effects Models with R
+]
+.author[
+### Maxime Blanchard | CSDC Methods Workshop
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-number {
+  font-size: 10pt;
+  margin-bottom: 0px;
+  margin-right: 0px;
+  color: #FFFFFF; /* white */
+  opacity: 0; /* default: 0 */
+}
+
+.remark-slide-content {
+    font-size: 22px;
+    padding-top: 0px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 10px;
+}
+
+.remark-code, .remark-inline-code { font-family: 'Source Code Pro', 'Lucida Console', Monaco, monospace;
+                                    font-size: 65%;
+                                  }
+
+.bigger.code .remark-code, .remark-inline-code  {
+    font-size: 100%;
+}
+
+.main-color-text {
+  color: #1381B0;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.highlight-last-item &gt; ul &gt; li,
+.highlight-last-item &gt; ol &gt; li {
+  opacity: 0.4;
+}
+.highlight-last-item &gt; ul &gt; li:last-of-type,
+.highlight-last-item &gt; ol &gt; li:last-of-type {
+  opacity: 1;
+}
+.panelset {
+  --panel-tab-foreground: currentColor;
+  --panel-tab-active-foreground: #1381B0;
+  --panel-tab-hover-foreground: #FF961C;
+  --panel-tabs-border-bottom: #ddd;
+  --panel-tab-inactive-opacity: 0.5;
+}
+&lt;/style&gt;
+
+
+
+
+### About me
+
+&lt;ul style="line-height:0.5;"&gt;
+
+.right[
+&lt;img src="mixed_effects_files/round.png" width="200px"/&gt;
+
+**Maxime Blanchard**
+
+PhD candidate, Political science, McGill University
+
+&lt;br&gt;
+
+&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"&gt;&lt;/path&gt;&lt;/svg&gt; maxime.blanchard@mail.mcgill.ca
+&lt;svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"&gt;&lt;/path&gt;&lt;/svg&gt; @blanchard-maxime
+&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"&gt;&lt;/path&gt;&lt;/svg&gt; @m_blanchard28
+&lt;svg viewBox="0 0 496 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; @blanchard28
+]
+
+---
+class: inverse, center, top
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+# Before we get started...
+
+--
+
+### .main-color-text[Download the workshop files!] 📦
+
+https://github.com/Blanchard28/mixed_effects_workshop
+
+---
+class: highlight-last-item
+### Roadmap
+
+- Focus on linear mixed models (LMMs)
+
+--
+
+- We will use the package .bigger.code[`lme4`]:
+
+&gt; Bates D., Mächler M., Bolker B. and Walker S. (2015). "Fitting Linear Mixed-Effects Models Using lme4." _Journal of Statistical Software_, 67(1), 1–48.
+
+--
+
+- And also the excellent .bigger.code[`marginaleffects`] package to visualize our model results:
+
+&gt; Arel-Bundock, V. (2022). "marginaleffects: Marginal Effects, Marginal Means, Predictions, and Contrasts." R Package version 0.8.1.9002, https://vincentarelbundock.github.io/marginaleffects/.
+
+---
+class: title-slide, center, middle
+
+# Let's get started!
+
+---
+class: highlight-last-item
+### The intuition
+
+- Data is often clustered in nature (e.g., respondents nested within cities/provinces/states/countries; students nested within classrooms/schools; repeated observations of the same participants).
+
+--
+
+- Three approaches to treating clustered data:
+
+    - Complete pooling (not accounting for clustered nature of data)
+    
+    - No pooling (using fixed effects to account for clustering)
+    
+    - Partial pooling (using random effects to _partially_ account for clustering)
+    
+---
+class: highlight-last-item
+### Complete pooling
+
+--
+
+- Assumes that clustering can be ignored (e.g., primary sampling units/cities/counties in surveys).
+
+--
+
+- If clustering should not be ignored, yields biased estimates. Vulnerable to unobserved, cluster-specific confounders.
+
+---
+class: highlight-last-item
+### No pooling
+
+--
+
+- Generally called using "fixed effects".
+
+--
+
+- Assumes that unobserved factors that vary across clusters cannot be ignored.
+
+--
+
+- Allows to account for unit-specific unobserved confounders.
+
+--
+
+- Allows to make inference about the sample, but tends to have a relatively weak capacity extrapolate beyond it, especially for new clusters and potentially even for clusters in the sample when working with a small sample.
+
+---
+class: highlight-last-item
+### Partial pooling
+
+--
+
+- Assumes that unobserved confounders that vary across clusters cannot be ignored, but puts a probability distribution on cluster-level variance.
+
+--
+
+- Allows to make inference about the population of clusters when working with only a sample of them.
+
+--
+
+- Allows to make more robust inference about the sample when working with imbalanced designs.
+
+--
+
+- The general objective of partial pooling is to allow extrapolation beyond the sample. If you only care about the sample you are working with, no pooling is a better approach.
+
+---
+class: highlight-last-item
+### Benefits of mixed-effects models/partial pooling
+
+--
+
+- Provides information on how much variation is occurring at each level (e.g., are voting turnout rates mainly dictated by individual or country-specific factors?).
+
+--
+
+- Allows to account for cluster-specific heterogeneity all the while estimating point estimates of covariates that are fixed within clusters. Examples:
+
+--
+
+    - If cluster is respondent (e.g., panel data), can account for respondent-specific heterogeneity (respondent random intercept) all the while estimating the impact of parameters that are fixed within respondents (e.g., gender, PID).
+    
+    - If cluster is country, can combine country-level random effects with measures of population, economic performance, etc.
+    
+    - Fixed effects models would drop the covariates that are fixed within clusters due to collinearity.
+
+--
+
+- Allows to estimate the correlation of random-effects, which can provide substantive insights.
+
+---
+class: highlight-last-item
+### Benefits of mixed-effects models/partial pooling (cont'd)
+
+- Provides a compromise between complete and no pooling approaches, that both make it hard to extrapolate beyond the sample under consideration. Complete pooling does not account for cluster-specific heterogeneity, whereas fixed effects will tend to overfit the data, providing poor out-of-sample predictions.
+
+--
+
+- Especially useful for **imbalanced** designs, since less populous clusters can integrate information from other clusters ("borrowing strength"). More on that later.
+
+--
+
+- Generally, mixed effects models provide **a lot** more information about the data than simple OLS models. The modelling possibilities are much more numerous, it's up to you to take full advantage of that.
+
+---
+class: highlight-last-item
+### When to use mixed-effects models
+
+--
+
+- When you have **clustered** data.
+
+--
+
+- Most useful when your clusters represent a sample of a broader population of clusters.
+
+--
+
+- Most useful when you have an **imbalanced design** and some cluster means may be unreliable.
+
+--
+
+- But... you need to have many clusters (bare minimum 10, ideally 30+).
+
+--
+
+    - Lots of observations per cluster does not compensate for small number of clusters.
+    
+    - Best to have many clusters with few observations than few clusters with many observations.
+
+--
+
+- Unless you are running a large-scale experiment, typically for correlational analysis.
+
+---
+class: highlight-last-item
+### A word on terminology
+
+--
+
+- Are "mixed effects models", "multilevel models", and "hierarchical models" the same thing?
+
+--
+
+- Not exactly. Mixed effects models are models that include random effects terms that be hierarchical or crossed. Hierarchical and multilevel models also include random effects, but there needs to be a hierarchical ordering in the clustering structure.
+
+--
+
+- Hierarchical clustering structure: students nested within classrooms nested within schools. Clear ordering here.
+
+--
+
+- Crossed clustering structure: yearly financial accounts of multinational firms, as each account is nested within a firm and a country, but firms are multinational so they are present in multiple countries.
+
+--
+
+- So mixed effects models can include both crossed and hierarchical random effects, but hierarchical and "multilevel" models should not include crossed random effects. So simply choose the appropriate name based on the kind of model you run.
+
+---
+class: highlight-last-item
+### Another word on terminology
+
+- Some dislike the terminology of "random effects" (e.g., Gelman &amp; Hill, 2007; McElreath, 2016).
+
+--
+
+- Fixed effects are also random parameters: they can theoretically take on any value.
+
+--
+
+- The "true" difference between fixed and random effects lies in the latter's point estimates varying across clusters.
+
+--
+
+- Accordingly, some prefer the terminology "varying intercept" and "varying slope", but few people use it.
+
+---
+class: title-slide, center, middle
+
+# Technical details
+
+---
+class: highlight-last-item
+### The random intercept model
+
+A random intercept model is very similar to single-level regression. The only difference lies in its inclusion of a term capturing cluster-level variance.
+
+--
+
+A simple example with a single covariate:
+
+`$$y_{ij} = \beta_{0} + \beta_{1}x_{1ij} + \mu_{0j} + \varepsilon_{ij}$$`
+
+where `\(\mu_{0j} \sim \text{N}(0, \sigma^2_{\mu})\)` and `\(\varepsilon_{ij} \sim \text{N}(0, \sigma^2_{\varepsilon})\)`, for `\(i = 1, \dots, I\)` observations and `\(j = 1, \dots,J\)` clusters. 
+
+--
+
+Both parameters capture unmeasured heterogeneity. `\(\mu_{0j}\)` accounts for **cluster-specific** heterogeneity, while `\(\varepsilon_{ij}\)` accounts for **unit-specific** heterogeneity.
+
+---
+class: highlight-last-item
+### Shrinkage effect
+
+&lt;!-- - Random effects are estimated using an empirical Bayes estimator: --&gt;
+
+&lt;!-- $$\pi(\mu_{0j} | y_{ij}, \boldsymbol{\beta}) \propto \mathcal{L}(\mu_{0j}|y_{ij}, \boldsymbol{\beta}) \times $$ --&gt;
+
+- A probability distribution is applied to random effects: `\(\mu_{0j} \sim \text{N}(\bar{\mu_{0}}, \sigma^2_{\mu_{0}})\)`. It operates as a **regularization** parameter.
+
+--
+
+- `\(\mu_{0j}\)` is pulled toward the overall mean (i.e., the "shrinkage" effect), but less so when inter-cluster variance is large, when `\(\mu_{0j}\)` is close to the overall mean `\(\bar{\mu}_{0}\)` and when `\(n_{j}\)` is large.
+
+--
+
+- When the number of clusters is small, `\(\sigma^2_{\mu}\)` is overestimated and our mixed effects model converges to a no pooling approach (hence why you need many clusters).
+
+--
+
+- Generally, the shrinkage effect is desirable because of the uneven information contained in different clusters when using an imbalanced design. It also allows potentially more precise extrapolation beyond the sample as the alternatives - complete pooling and no pooling - either maximally underfit or overfit the data.
+
+---
+class: highlight-last-item
+### The random intercept model, visually
+
+Let's look at how perceived corruption predicts satisfaction with democracy across a bunch of countries, using CSES data. We'll compare our random intercept model with a complete pooling and no pooling approach.
+
+--
+
+
+```
+## 
+## ==================================================================
+##                        Full pooling  No pooling    Partial pooling
+## ------------------------------------------------------------------
+## (Intercept)                3.60 ***      3.67 ***       3.25 ***  
+##                           (0.01)        (0.02)         (0.05)     
+## corrupt                   -0.37 ***     -0.26 ***      -0.26 ***  
+##                           (0.00)        (0.00)         (0.00)     
+## female                     0.01          0.00           0.00      
+##                           (0.01)        (0.01)         (0.01)     
+## college                    0.07 ***      0.06 ***       0.06 ***  
+##                           (0.01)        (0.01)         (0.01)     
+## ------------------------------------------------------------------
+## R^2                        0.17          0.25                     
+## Adj. R^2                   0.17          0.25                     
+## Num. obs.              66529         66529          66529         
+## AIC                                                145539.91      
+## BIC                                                145594.54      
+## Log Likelihood                                     -72763.95      
+## Num. groups: elec                                      41         
+## Var: elec (Intercept)                                   0.08      
+## Var: Residual                                           0.52      
+## ==================================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05
+```
+
+
+
+---
+class: highlight-last-item
+### The random intercept model, visually
+
+.center[
+&lt;img src="index_files/figure-html/models.comp.plot-1.png" width="70%" /&gt;
+]
+
+---
+class: highlight-last-item
+### The random intercept model, visually (cont'd)
+
+- There is very little "shrinkage" in the random intercept model shown in the previous slide.
+
+--
+
+- This is because our sample sizes for all clusters are very large (min = 687, `\(\bar{n}\)` = 1,623) and the model is quite simple, which enhances the precision with which the cluster-level means can be estimated.
+
+--
+
+
+
+- Let's take a random sample of only 1% of observations in each cluster and see how that influences the amount of shrinkage we get:
+
+---
+class: highlight-last-item
+### The random intercept model, visually (cont'd)
+
+.pull-left[
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+
+--
+
+.pull-right[
+- As you can see, mixed effects models are most useful when clusters have a relatively small sample size and when the number of clusters is fairly large (otherwise the cluster-level variance will be overestimated and you won't get much shrinkage even with small cluster sample sizes).
+{{content}}
+]
+
+--
+
+- This kind of structure enables them to "share" information across clusters.
+{{content}}
+
+--
+
+- This enhances their capacity to extrapolate beyond your sample, especially when using complex models. You are **less likely to overfit the data**.
+
+---
+class: highlight-last-item
+### The random slope model
+
+The random slope model is an extension of the random intercept model where one or many of the slope coefficients vary across the clustering units.
+
+--
+
+Formally, for a model with a single random-slope:
+
+`$$y_{ij} = \beta_{0} + \beta_{1}x_{1ij} + \mu_{0j} + \mu_{1j}x_{1ij} + \varepsilon_{ij}$$`
+
+--
+
+with 
+`$$\begin{bmatrix}
+\mu_{0j} \\
+\mu_{1j}
+\end{bmatrix} \sim \text{MVN}(0, \boldsymbol{\Sigma})$$`
+
+--
+
+where `\(\boldsymbol{\Sigma}\)` is the variance-covariance matrix of the random effects:
+
+`$$\boldsymbol{\Sigma} = \begin{bmatrix}
+\sigma_{0}, \sigma_{01} \\
+\sigma_{10}, \sigma_{1}
+\end{bmatrix}.$$`
+
+---
+class: highlight-last-item
+### The random slope model (cont'd)
+
+- Let's visualize a random slope model, comparing the results we get with our full sample size to those we get using the sliced sample
+
+--
+
+.center[
+&lt;img src="index_files/figure-html/sliced.comp-1.png" width="60%" /&gt;
+]
+
+--
+
+- Once again, we get more shrinkage with the sliced sample: slopes and intercepts for each election are closer to the overall slope and intercept.
+
+---
+class: highlight-last-item
+### Random slope without a random intercept?
+
+- Can you estimate a model with a random slope without also including a random intercept?
+
+--
+
+- Technically, yes, the math works and you will have results. But...
+
+--
+
+- It makes unrealistic assumptions, similarly to estimating an interaction and omitting one of the lower-order terms.
+
+--
+
+- Best avoided.
+
+---
+class: highlight-last-item
+### Estimation
+
+- In `lme4`, the default estimation method is restricted maximum likelihood (REML).
+
+--
+
+- You can also estimate models using maximum likelihood (ML), but it provides biased estimates of random-effects (although the difference is not practically significant when using simple models and/or very informative data).
+
+--
+
+- What's the main difference between the two methods? Snijders and Bosker (2012) explain it better than me:
+
+&gt; _"A very brief indication of the difference between the two methods is that REML estimates the variance components while taking into account the loss of degrees of freedom resulting from the estimation of the regression parameters, while ML does not take this into account. The result is that the ML estimators for the variance components have a downward bias, and the REML estimators do not."_
+Snijders and Bosker (2012: sec. 4.7)
+
+---
+class: highlight-last-item
+### Estimation (cont'd)
+
+- In essence, both estimators do the same work, they seek `\(\text{arg max}\mathcal{L}(\beta, \sigma | y)\)`, i.e., identify the combination of parameters that maximizes their (relative) likelihood given the data (see Fox, 2016: section 23.9.1 for a detailed explanation of the estimation process). But the unbiasedness of the REML method makes it preferable.
+
+--
+
+- That said, likelihood ratio tests (LRT) to compare model fits cannot always be conducted on models fit using REML (we'll dive into what are LRTs and why we should care about them a bit later).
+
+--
+
+- The rules of when you can and cannot conduct LRTs on models fit using REML are somewhat complex, so it's best to simply re-fit the models using ML before conducting a LRT.
+
+---
+class: title-slide, center, middle
+
+# Computation
+
+---
+class: highlight-last-item
+### Data pre-processing
+
+- Beneficial to scale predictors to speed up computation or simply allow the algorithm to converge.
+
+--
+
+- Mostly a problem when using predictors on vastly different scales (e.g., combining binary or ordinal predictors with macro-level data such as population size or GDP). Under such circumstances, especially when estimating complex models, some optimizers will be very slow or even fail to maximize the likelihood function.
+
+--
+
+- Why? Because the partial derivative of the predictors on the larger scale will dominate the computation of the loss function's gradient. So each step of the gradient descent process will not necessarily move toward the function's minimum, making the optimizer unable to find the combination of parameter values that maximize the likelihood function.
+
+--
+
+- Even when estimating fairly simple models, help yourselves by scaling predictors to make the optimization process simpler.
+
+--
+
+- Exceptionally, when estimating very complex (too complex?) models, even scaling predictors will not be enough to allow the algorithm to converge. Choosing a different optimizer may be helpful, as some are better at optimizing complex functions (but tend to be slower). More on that later in the presentation.
+
+---
+class: highlight-last-item
+### Estimating a random intercept model
+
+We will use ANES data to fit a model predicting feeling thermometer scores toward the Democratic party where the intercept varies for each state.
+
+--
+
+Formally,
+
+`$$y_{ij} = \beta_{0} + \beta_{1}Age + \beta_{2}Female + \beta_{3}RacialID + \mu_{0j} + \varepsilon_{ij}$$`
+
+where `\(i\)` indexes respondents and `\(j\)` indexes states in which they live.
+
+---
+### Estimating a random-intercept model (cont'd)
+
+- Let's start by loading the data
+
+--
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, lme4, marginaleffects, optimx, broom.mixed)
+
+anes &lt;- readRDS("./data/anes/anes_recoded.rds"); str(anes)
+```
+
+```
+## 'data.frame':	40081 obs. of  9 variables:
+##  $ pid   : chr  "republican" "democrat" "democrat" "democrat" ...
+##  $ age   : int  52 57 61 25 70 67 47 86 52 30 ...
+##  $ female: num  0 1 1 1 0 0 1 0 1 1 ...
+##  $ race  : chr  "white" "black" "black" "white" ...
+##  $ ft_dem: int  97 60 85 50 70 85 60 85 40 60 ...
+##  $ ft_rep: int  97 70 70 50 50 70 50 97 70 50 ...
+##  $ state : chr  "OH" "OH" "MI" "LA" ...
+##  $ year  : int  1980 1980 1980 1980 1980 1980 1980 1980 1980 1980 ...
+##  $ cohort: chr  "1920s" "1920s" "1910s" "1950s" ...
+```
+
+---
+class: highlight-last-item
+### Estimating a random intercept model (cont'd)
+
+- Now let's specify a simple random intercept model with state as the clustering variable, using .bigger.code[`lme4`].
+
+--
+
+- Random effects are specified within parentheses. The clustering variable must **not** be included as a fixed effect parameter.
+
+--
+
+
+```r
+ri.fit &lt;- lmer(ft_dem ~ 1 + age + female + race +
+                 (1 | state),
+             data = anes)
+summary(ri.fit, 
+        correlation = FALSE) # correlation of FE, of little interest
+```
+
+---
+### Estimating a random intercept model (cont'd)
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: ft_dem ~ 1 + age + female + race + (1 | state)
+##    Data: anes
+## 
+## REML criterion at convergence: 374073.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2173 -0.5866  0.1089  0.6985  2.2991 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  state    (Intercept)  14.35    3.789  
+##  Residual             659.80   25.687  
+## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error t value
+## (Intercept)   71.566408   0.770901  92.835
+## age            0.027619   0.007459   3.703
+## female         5.397808   0.257880  20.932
+## racehispanic -12.933167   0.575063 -22.490
+## raceother    -21.878788   0.707997 -30.902
+## racewhite    -26.131678   0.410938 -63.590
+```
+]
+
+---
+### Estimating a random intercept model (cont'd)
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: ft_dem ~ 1 + age + female + race + (1 | state)
+##    Data: anes
+## 
+## REML criterion at convergence: 374073.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2173 -0.5866  0.1089  0.6985  2.2991 
+## 
+*## Random effects:
+*##  Groups   Name        Variance Std.Dev.
+*##  state    (Intercept)  14.35    3.789  
+*##  Residual             659.80   25.687  
+*## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error t value
+## (Intercept)   71.566408   0.770901  92.835
+## age            0.027619   0.007459   3.703
+## female         5.397808   0.257880  20.932
+## racehispanic -12.933167   0.575063 -22.490
+## raceother    -21.878788   0.707997 -30.902
+## racewhite    -26.131678   0.410938 -63.590
+```
+]
+
+.pull-right[
+- The "Random effects" part of the output is what's specific to mixed effects models.
+{{content}}
+
+]
+
+--
+
+- It provides information on the variance of each random effect we specify, along with the residual variance at the individual-level (i.e. the error term).
+{{content}}
+
+--
+
+- Remember that random effects are assumed to follow a normal distribution, so the variance parameter gives us information on the shape of this distribution.
+{{content}}
+
+--
+
+- What this is telling us here is that there is some residual variance at the state-level, but it is of very small magnitude compared to the residual variance at the individual-level.
+
+---
+class: highlight-last-item
+### Where are the p-values???
+
+--
+
+- Mixed effects models are a currently evolving line of research, and statisticians suggest that the math does not always work out for p-values of fixed effects parameters in mixed effects models.
+
+--
+
+- Simply put, with unbalanced data, the t-value of coefficients does not follow a t-distribution. 🤨
+
+--
+
+- This mostly impacts models that are either complex or have small sample sizes/number of clusters. For relatively simple models with a large sample size and number of clusters, the approximation difference vanishes.
+
+--
+
+- .bigger.code[`lmerTest`] allows you to obtain p-values, but based on what I just mentioned, they are somewhat too optimistic (by how much though will depend on your data and model).
+
+--
+
+- My take: **we shouldn't adhere to strict cut-off values of statistical significance anyways** (see Wasserstein et al., 2019). So compute confidence intervals around your coefficients of interest as you usually would, and if they almost overlap 0, then you may want to be a bit more conservative in your interpretation than you typically are.
+
+--
+
+- Whether we like it or not, data science is still more of an art than a science sometimes. 👩🏼‍🎨
+
+---
+### Getting the p-values
+
+- We simply need to load .bigger.code[`lmerTest`] and re-fit our model
+
+--
+
+
+```r
+pacman::p_load(lmerTest)
+
+# we need to re-fit the model after loading lmerTest
+ri.fit &lt;- lmer(ft_dem ~ 1 + age + female + race +
+                 (1 | state),
+             data = anes)
+
+summary(ri.fit, 
+        correlation = FALSE)
+```
+
+---
+class: highlight-last-item
+### Getting the p-values
+
+- We simply need to load .bigger.code[`lmerTest`] and re-fit our model
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age + female + race + (1 | state)
+##    Data: anes
+## 
+## REML criterion at convergence: 374073.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2173 -0.5866  0.1089  0.6985  2.2991 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  state    (Intercept)  14.35    3.789  
+##  Residual             659.80   25.687  
+## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)   7.157e+01  7.709e-01  1.321e+02  92.835  &lt; 2e-16 ***
+## age           2.762e-02  7.459e-03  4.007e+04   3.703 0.000213 ***
+## female        5.398e+00  2.579e-01  4.003e+04  20.932  &lt; 2e-16 ***
+## racehispanic -1.293e+01  5.751e-01  3.893e+04 -22.490  &lt; 2e-16 ***
+## raceother    -2.188e+01  7.080e-01  3.972e+04 -30.902  &lt; 2e-16 ***
+## racewhite    -2.613e+01  4.109e-01  3.870e+04 -63.590  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+--
+
+.pull-right[
+- From here onward we will always have p-values included in our .bigger.code[`summary()`] outputs since we loaded the .bigger.code[`lmerTest`] package.
+]
+
+---
+### Visualizing random effects
+
+We can extract random effects using .bigger.code[`ranef()`]
+
+--
+
+
+```r
+ranef(ri.fit, 
+      drop = TRUE,     # to have them as a vector
+      condVar = FALSE) # I don't want to see their conditional variance
+```
+
+---
+### Visualizing random effects
+
+We can extract random effects using .bigger.code[`ranef()`]
+
+
+```r
+ranef(ri.fit, 
+      drop = TRUE,     # to have them as a vector
+      condVar = FALSE) # I don't want to see their conditional variance
+```
+
+```
+## $state
+##          AK          AL          AR          AZ          CA          CO 
+## -3.07464917 -1.26297978  1.08795722 -3.70950275  1.50813827  0.96262682 
+##          CT          DC          DE          FL          GA          HI 
+##  1.96444265  6.65816389  2.75901310 -1.95629794 -2.44979127 -1.16044515 
+##          IA          ID          IL          IN          KS          KY 
+##  4.52486037 -8.70644221  1.03627535  1.04953812 -1.14983294 -3.27421770 
+##          LA          MA          MD          ME          MI          MN 
+## -2.92352174  7.02646252  1.18426898 -0.05952993  2.48566676  5.06900426 
+##          MO          MS          MT          NC          ND          NE 
+## -1.18768420 -4.90346053 -3.51217272  0.72108195 -6.68354831 -2.51506907 
+##          NH          NJ          NM          NV          NY          OH 
+##  2.71232031  1.43522945 -0.81261732 -5.66360585  3.11575342  1.12058782 
+##          OK          OR          PA          RI          SC          SD 
+## -6.14981248  4.05283134  1.72021597 -1.39243886 -4.37419371 -2.91796297 
+##          TN          TX          UT          VA          VT          WA 
+##  0.54850925 -0.91995700 -1.31668321  1.03263543  2.06891206  3.87866081 
+##          WI          WV          WY 
+##  1.83008446  6.37899892  4.14417731
+```
+
+---
+### Visualizing random effects
+
+Can also use a plot
+
+--
+
+
+```r
+broom.mixed::tidy(ri.fit, effects = "ran_vals") %&gt;%
+    ggplot(aes(x = reorder(level, -estimate), y = estimate)) +
+    geom_hline(yintercept = 0, color = "grey70") +
+    geom_point(color = "cyan4") +
+    geom_errorbar(aes(ymin = estimate - 1.96*std.error, ymax = estimate + 1.96*std.error), 
+                  width = 0, color = "cyan4") +
+    labs(x = "State", y = "RE estimate") +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+    theme_classic() +
+    coord_flip()
+```
+---
+### Visualizing random effects
+
+Can also use a plot
+
+.center[
+&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="70%" /&gt;
+]
+
+---
+### Comparing with fixed effects
+
+Let's plot state-level predictions to compare our FE and RE models.
+
+--
+
+.pull-left[
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="95%" /&gt;
+]
+
+--
+
+.pull-right[
+- Not a lot of shrinkage. Why could that be?
+{{content}}
+]
+
+--
+
+- Again, we simply have too many observations per cluster and a simple model, so smaller clusters borrow little information from larger ones.
+
+---
+### Comparing with fixed effects
+
+Let's try the same thing, but using only observations from the 1980 ANES `\((n = 1,506)\)`.
+
+--
+
+.pull-left[
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="95%" /&gt;
+]
+
+--
+
+.pull-right[
+- Much more shrinkage here, since individual clusters contain less information.
+{{content}}
+
+]
+
+--
+
+- The amount of shrinkage you get is a function of cluster sample size and cluster-level variance.
+{{content}}
+
+--
+
+- The prediction intervals are also much smaller in the random effects model since we are (partially) pooling observations: clusters "borrow strength" from one another.
+
+---
+### Shrinkage as a function of cluster sample size
+
+Let `\(\gamma_{j}\)` be the amount of shrinkage we get for state `\(j\)`, where `\(\gamma_{j} = \widehat{y^{FE}_{j}} - \widehat{y^{RE}_{j}}\)`
+
+--
+
+.left[
+&lt;img src="index_files/figure-html/unnamed-chunk-13-1.png" width="70%" /&gt;
+]
+
+---
+class: highlight-last-item
+### Interpreting random effects
+
+- **Do not** interpret their prediction intervals as confidence intervals. Notions of statistical significance are inappropriate here.
+
+--
+
+- Since random-effects are not fixed parameters, we can't say that we "estimate" them. Thus rather than referring to them as estimates, we commonly refer to them as the **B**est **L**inear **U**nbiased **P**redictors (BLUPs) of the cluster-level variance. Typically, people will just call them "variance components".
+
+---
+class: highlight-last-item
+### Crossed random-effects
+
+--
+
+- You can also estimate a model with crossed random effects, i.e., random effects for multiple clusters that are not nested within one another.
+
+--
+
+- We will do so estimating a random-intercept model on our ANES data where there is a variance component at the state-level and another variance component at the cohort-level (i.e., respondents' decade of birth). These are crossed random effects as respondents from a given state may belong to different cohorts and vice versa.
+
+--
+
+
+```r
+crossed.re.fit &lt;- lmer(ft_dem ~ 1 + age + female + race +
+                           (1 | state) + (1 | cohort),
+                       data = anes)
+summary(crossed.re.fit, 
+        correlation = FALSE)
+```
+
+---
+### Crossed random-effects (cont'd)
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age + female + race + (1 | state) + (1 | cohort)
+##    Data: anes
+## 
+## REML criterion at convergence: 371990.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.6244 -0.6225  0.0787  0.7242  2.4227 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  state    (Intercept)   7.763   2.786  
+##  cohort   (Intercept) 194.163  13.934  
+##  Residual             625.672  25.013  
+## Number of obs: 40081, groups:  state, 51; cohort, 13
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)   9.405e+01  4.021e+00  1.292e+01   23.39 5.89e-12 ***
+## age          -3.454e-01  1.097e-02  3.734e+04  -31.48  &lt; 2e-16 ***
+## female        5.146e+00  2.513e-01  4.002e+04   20.48  &lt; 2e-16 ***
+## racehispanic -1.145e+01  5.608e-01  3.638e+04  -20.42  &lt; 2e-16 ***
+## raceother    -1.862e+01  6.933e-01  3.931e+04  -26.86  &lt; 2e-16 ***
+## racewhite    -2.652e+01  3.996e-01  3.624e+04  -66.36  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+---
+class: highlight-last-item
+### Crossed random-effects (cont'd)
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age + female + race + (1 | state) + (1 | cohort)
+##    Data: anes
+## 
+## REML criterion at convergence: 371990.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.6244 -0.6225  0.0787  0.7242  2.4227 
+## 
+*## Random effects:
+*##  Groups   Name        Variance Std.Dev.
+*##  state    (Intercept)   7.763   2.786  
+*##  cohort   (Intercept) 194.163  13.934  
+*##  Residual             625.672  25.013  
+*## Number of obs: 40081, groups:  state, 51; cohort, 13
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)   9.405e+01  4.021e+00  1.292e+01   23.39 5.89e-12 ***
+## age          -3.454e-01  1.097e-02  3.734e+04  -31.48  &lt; 2e-16 ***
+## female        5.146e+00  2.513e-01  4.002e+04   20.48  &lt; 2e-16 ***
+## racehispanic -1.145e+01  5.608e-01  3.638e+04  -20.42  &lt; 2e-16 ***
+## raceother    -1.862e+01  6.933e-01  3.931e+04  -26.86  &lt; 2e-16 ***
+## racewhite    -2.652e+01  3.996e-01  3.624e+04  -66.36  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+.pull-right[
+- Here, we see two random effects (intercepts by state and intercepts by cohort).
+{{content}}
+
+]
+
+--
+
+- The residual variance at the cohort level is much greater than the variance at the state level, but this could be deceiving. Given that we have only 13 cohorts, the model is likely to overestimate the cross-cohort variance.
+{{content}}
+
+--
+
+- Still, the variance at the individual-level remains much greater.
+
+---
+### Crossed random effects, visually
+
+
+```r
+bind_rows(
+    predictions(crossed.re.fit, 
+            by = "state") %&gt;% 
+    dplyr::select(state, estimate, conf.low, conf.high) %&gt;% 
+    mutate(re = "State") %&gt;% 
+    rename(value = state),
+    predictions(crossed.re.fit, 
+            by = "cohort") %&gt;% 
+    dplyr::select(cohort, estimate, conf.low, conf.high) %&gt;% 
+    mutate(re = "Cohort") %&gt;% 
+    rename(value = cohort)
+) %&gt;% 
+    ggplot(aes(x = reorder(value, -estimate), y = estimate)) +
+    geom_point(aes(col = re)) +
+    geom_errorbar(aes(ymin = conf.low, ymax = conf.high, col = re),
+                  width = 0) +
+    labs(x = "Random effect", y = "Predicted Democratic FT score") +
+    scale_color_manual("", values = c("cyan4", "royalblue4")) +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+    theme_classic() +
+    theme(legend.position = "none") +
+    facet_wrap(. ~ re,
+               scales = "free_y") +
+    coord_flip()
+```
+
+---
+### Crossed random effects, visually
+
+.center[
+&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="70%" /&gt;
+]
+
+---
+class:highlight-last-item
+### Adding a random slope
+
+Let's add a random slope for age, which also varies by state:
+
+--
+
+
+```r
+rs.fit &lt;- lmer(ft_dem ~ 1 + age + female + race +
+                           (1 + age | state),
+               data = anes)
+```
+
+--
+
+
+```
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 37.7753 (tol = 0.002, component 1)
+```
+
+```
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?
+```
+
+--
+
+- Oooops, we have a scary-looking issue!
+
+&lt;!-- -- --&gt;
+
+&lt;!-- - In this case, we still have a model output, that we could retrieve via .bigger.code[`summary()`]. But given the warnings we got, those results are unreliable. --&gt;
+
+--
+
+- Convergence issues are relatively frequent when using mixed-effects models given the fairly intricate computations that they involve. Fortunately, most of the time there exist relatively simple fixes.
+
+---
+class:highlight-last-item
+### Digging into convergence issues
+
+- Remember the slide about data pre-processing? There are a few hints there as to why our model may fail to converge.
+
+--
+
+- First, consider our list of predictors: age, gender and race. None of these have been pre-processed, apart from validating that they did not include aberrant values (e.g., "99" used for missing values).
+
+--
+
+- This is an issue given that we have two categorical predictors (gender and race) and a continuous predictor (age), with the latter being on a very different scale than the former. This complicates the optimization of our likelihood function as the partial derivative of our continuous predictor (age) will dominate the gradient descent process and either make the algorithm very slow to converge or prevent it from converging altogether. Let's standardize age and see whether that solves the issue.
+
+---
+### Re-estimating the model with scaled predictors
+
+Let's scale our continuous predictor (age) and re-estimate the model
+
+--
+
+
+```r
+anes = anes %&gt;%
+    mutate(age.s = (age - mean(age)) / sd(age))
+
+rs.fit &lt;- lmer(ft_dem ~ 1 + age.s + female + race +
+                           (1 + age.s | state),
+               data = anes)
+summary(rs.fit,
+        correlation = FALSE)
+```
+
+---
+class:highlight-last-item
+### Re-estimating the model with scaled predictors
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age.s + female + race + (1 + age.s | state)
+##    Data: anes
+## 
+## REML criterion at convergence: 374050.2
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1773 -0.5924  0.1110  0.7042  2.2798 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr
+##  state    (Intercept)  13.8916  3.7271      
+##           age.s         0.7129  0.8444  0.86
+##  Residual             659.3529 25.6779      
+## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     72.9229     0.6850    87.5798 106.451   &lt;2e-16 ***
+## age.s            0.3866     0.1860    32.0935   2.078   0.0458 *  
+## female           5.3932     0.2578 40028.3770  20.918   &lt;2e-16 ***
+## racehispanic   -12.9590     0.5731 18448.0396 -22.611   &lt;2e-16 ***
+## raceother      -21.8547     0.7073 38446.1108 -30.900   &lt;2e-16 ***
+## racewhite      -26.1399     0.4101 35086.4316 -63.733   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+--
+
+.pull-right[
+- This time, the optimizer could evaluate the gradient thanks to our more "workable" distribution of predictors, which shows why you should always scale your predictors before estimating a mixed-effects model.
+{{content}}
+
+]
+
+--
+
+- In some case though, that could not be enough and the maximum absolute gradient of your model could still be larger than the default tolerance level (.002), i.e., there is still some room for improvement on the model fit before the algorithm stopped. Let's see how we could solve that.
+
+---
+class:highlight-last-item
+### Trying different optimizers
+
+- There exist many optimization algorithms to maximize a function. Their internal mechanics is all different, some of them being more robust to complex multivariate functions (i.e., more likely to converge), others being faster. .bigger.code[`lme4`] can use quite a few.
+
+--
+
+- Let's see if different optimizers all allow our model to converge. To do so, we need to use the function .bigger.code[`allFit()`]:
+
+--
+
+
+```r
+optims &lt;- allFit(rs.fit,
+                 verbose = FALSE) # don't report progress
+optims_OK &lt;- optims[sapply(optims, is, "merMod")]
+lapply(optims_OK, function(x) x@optinfo$conv$lme4$messages)
+# taken from: https://joshua-nugent.github.io/allFit/
+```
+
+---
+class:highlight-last-item
+### Trying different optimizers
+
+
+```
+## $bobyqa
+## NULL
+## 
+## $Nelder_Mead
+## NULL
+## 
+## $nlminbwrap
+## NULL
+## 
+## $nmkbw
+## NULL
+## 
+## $`optimx.L-BFGS-B`
+## [1] "boundary (singular) fit: see help('isSingular')"
+## 
+## $nloptwrap.NLOPT_LN_NELDERMEAD
+## [1] "boundary (singular) fit: see help('isSingular')"
+## 
+## $nloptwrap.NLOPT_LN_BOBYQA
+## NULL
+```
+
+--
+
+- .bigger.code[`NULL`] means that we have no convergence warning when using the given optimizer to estimate our model.
+
+--
+
+- So in our case, all but the fifth and sixth optimizers provide reliable results.
+
+---
+### Choosing an optimizer
+
+- Let's estimate our random intercept, random slope model with an optimizer of our choice.
+
+--
+
+- To do so, we need to specify it inside .bigger.code[`lmerControl()`]:
+
+--
+
+
+```r
+rs.fit.bob &lt;- lmer(ft_dem ~ 1 + age.s + female + race +
+                       (1 + age.s | state),
+                   control = lmerControl(optimizer = "bobyqa"),
+                   data = anes)
+summary(rs.fit.bob, 
+        correlation = FALSE)
+```
+
+---
+### Random intercept, random slope output
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age.s + female + race + (1 + age.s | state)
+##    Data: anes
+## Control: lmerControl(optimizer = "bobyqa")
+## 
+## REML criterion at convergence: 374050.2
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1773 -0.5924  0.1110  0.7042  2.2798 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr
+##  state    (Intercept)  13.8913  3.7271      
+##           age.s         0.7129  0.8443  0.86
+##  Residual             659.3529 25.6779      
+## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     72.9229     0.6850    87.5824 106.451   &lt;2e-16 ***
+## age.s            0.3866     0.1860    32.0950   2.078   0.0458 *  
+## female           5.3932     0.2578 40028.3766  20.918   &lt;2e-16 ***
+## racehispanic   -12.9590     0.5731 18450.5244 -22.611   &lt;2e-16 ***
+## raceother      -21.8547     0.7073 38446.3152 -30.900   &lt;2e-16 ***
+## racewhite      -26.1399     0.4101 35086.8353 -63.733   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+---
+class: highlight-last-item
+### Random intercept, random slope output
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age.s + female + race + (1 + age.s | state)
+##    Data: anes
+## Control: lmerControl(optimizer = "bobyqa")
+## 
+## REML criterion at convergence: 374050.2
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1773 -0.5924  0.1110  0.7042  2.2798 
+## 
+*## Random effects:
+*##  Groups   Name        Variance Std.Dev. Corr
+*##  state    (Intercept)  13.8913  3.7271      
+*##           age.s         0.7129  0.8443  0.86
+*##  Residual             659.3529 25.6779      
+*## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     72.9229     0.6850    87.5824 106.451   &lt;2e-16 ***
+## age.s            0.3866     0.1860    32.0950   2.078   0.0458 *  
+## female           5.3932     0.2578 40028.3766  20.918   &lt;2e-16 ***
+## racehispanic   -12.9590     0.5731 18450.5244 -22.611   &lt;2e-16 ***
+## raceother      -21.8547     0.7073 38446.3152 -30.900   &lt;2e-16 ***
+## racewhite      -26.1399     0.4101 35086.8353 -63.733   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+.pull-right[
+- Here, we see two random effects for each cluster: a random intercept and a random slope for age.
+{{content}}
+
+]
+
+--
+
+- The residual variance for the age slope is much smaller than that for the intercept, but it is expressed on the scale of the fixed effect, so given the small magnitude of the fixed effect slope for age (.39), a variance of .71 is very meaningful as it implies that some slopes are positive, while others are negative.
+{{content}}
+
+--
+
+- Important to note: the Corr column, which indicates the correlation of the random effects. Remember that these are assumed to follow a multivariate normal distribution, so this parameter informs us about their covariance.
+
+---
+### Random slopes, visually (Spaghetti plot)
+
+
+```r
+data.preds = expand.grid(age.s = unique(anes$age.s),
+                         state = unique(anes$state),
+                         female = 1,
+                         race = "hispanic")
+
+data.preds$preds = predict(rs.fit.bob,
+                           newdata = data.preds)
+
+ggplot(data.preds, aes(x = age.s, y = preds, group = state)) +
+    geom_line(color = "cyan4") +
+    labs(x = "Age (z-score)", y = "Predicted Democratic FT score") +
+    theme_classic() +
+    theme(legend.position = "none")
+```
+
+---
+class:highlight-last-item
+### Random slopes, visually (Spaghetti plot)
+
+.pull-left[
+&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+]
+
+--
+
+.pull-right[
+
+- We see a funnel-like shape because the two random-effects are strongly correlated (.86), so the states with the largest intercepts also tend to have the most positive slopes for .bigger.code[`age.s`] and vice versa.
+{{content}}
+
+]
+
+--
+
+- Substantively, the difference in Democratic party FT scores across states appears larger among older voters, compared to younger ones. This could potentially reflect the impact of socialization?
+{{content}}
+
+--
+
+- Further, as we noticed in the previous slide, some slopes are positive, while others are negative. It is up to you to find such pieces of information and discuss their substantive significance.
+
+---
+class:highlight-last-item
+### Joint distribution of random effects
+
+- When estimating models with many random effects, it can be interesting to investigate their joint distribution. Doing so can sometimes provide valuable substantive insights.
+
+--
+
+- .bigger.code[`lme4`] always assume them to follow a multivariate normal distribution. Bayesian approaches allow you to deviate from that assumption, but we will not cover that today.
+
+--
+
+- Let's look at an example, with the model we just estimated.
+
+--
+
+
+```r
+data.frame(ranef(rs.fit.bob)) %&gt;% 
+    dplyr::select(-c(grpvar, condsd)) %&gt;% 
+    pivot_wider(names_from = term, values_from = condval) %&gt;% 
+    rename(state = grp,
+           intercept = `(Intercept)`) %&gt;% 
+    ggplot(aes(x = age.s, y = intercept)) +
+    geom_vline(xintercept = 0, color = "grey70") +
+    geom_hline(yintercept = 0, color = "grey70") +
+    geom_point(color = "cyan4") +
+    labs(x = "RE (age)", y = "RE (intercept)") +
+    theme_classic()
+```
+
+---
+class:highlight-last-item
+### Joint distribution of random effects
+
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="70%" /&gt;
+
+---
+class:highlight-last-item
+### A model with uncorrelated random effects
+
+- By default, .bigger.code[`lme4`] assumes that random effects follow a multivariate normal distribution, estimates their covariance and uses such information to determine the value of the random effects for each cluster.
+
+--
+
+- You can also estimate a model where the random effects are not constrained to be correlated, if you have reasons to believe that your random effects are independent of one another.
+
+--
+
+- Be careful though: if you make the assumption that random effects are independent of one another when in fact they are not, you are discarding useful information that may lead to less precisely estimated variance components..fn[&lt;sup&gt;1&lt;/sup&gt;]
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt; For an extended discussion of correlated vs uncorrelated random effects, see https://rpubs.com/yjunechoe/correlationsLMEM.]
+
+--
+
+- That said, if you do want to do so, you simply call separately the parameters that vary across groups inside your formula argument. Let's see how this works with our model including random effects for the intercept and age.
+
+---
+class:highlight-last-item
+### A model with uncorrelated random effects
+
+
+```r
+rs.fit.bob.uncorr &lt;- lmer(ft_dem ~ 1 + age.s + female + race +
+                              (1 | state) + 
+                              (0 + age.s | state), # calling zero to explicitly remove the intercept
+                          control = lmerControl(optimizer = "bobyqa"),
+                          data = anes)
+summary(rs.fit.bob.uncorr, 
+        correlation = FALSE)
+```
+
+---
+class:highlight-last-item
+### A model with uncorrelated random effects
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age.s + female + race + (1 | state) + (0 + age.s |  
+##     state)
+##    Data: anes
+## Control: lmerControl(optimizer = "bobyqa")
+## 
+## REML criterion at convergence: 374059.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1935 -0.5916  0.1075  0.7043  2.2994 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  state    (Intercept)  14.3104  3.7829 
+##  state.1  age.s         0.5598  0.7482 
+##  Residual             659.3046 25.6769 
+## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     72.8912     0.6930    86.9920 105.185  &lt; 2e-16 ***
+## age.s            0.5508     0.1850    33.3599   2.978  0.00537 ** 
+## female           5.3980     0.2579 40027.3451  20.934  &lt; 2e-16 ***
+## racehispanic   -13.0044     0.5765 38400.4318 -22.556  &lt; 2e-16 ***
+## raceother      -21.8846     0.7081 39710.0633 -30.906  &lt; 2e-16 ***
+## racewhite      -26.1388     0.4110 38689.5540 -63.602  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+---
+class:highlight-last-item
+### A model with uncorrelated random effects
+
+.pull-left[
+
+```
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: ft_dem ~ 1 + age.s + female + race + (1 | state) + (0 + age.s |  
+##     state)
+##    Data: anes
+## Control: lmerControl(optimizer = "bobyqa")
+## 
+## REML criterion at convergence: 374059.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1935 -0.5916  0.1075  0.7043  2.2994 
+## 
+*## Random effects:
+*##  Groups   Name        Variance Std.Dev.
+*##  state    (Intercept)  14.3104  3.7829 
+*##  state.1  age.s         0.5598  0.7482 
+*##  Residual             659.3046 25.6769 
+*## Number of obs: 40081, groups:  state, 51
+## 
+## Fixed effects:
+##                Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)     72.8912     0.6930    86.9920 105.185  &lt; 2e-16 ***
+## age.s            0.5508     0.1850    33.3599   2.978  0.00537 ** 
+## female           5.3980     0.2579 40027.3451  20.934  &lt; 2e-16 ***
+## racehispanic   -13.0044     0.5765 38400.4318 -22.556  &lt; 2e-16 ***
+## raceother      -21.8846     0.7081 39710.0633 -30.906  &lt; 2e-16 ***
+## racewhite      -26.1388     0.4110 38689.5540 -63.602  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+.pull-right[
+- This time, state is treated as two distinct clusters (one for the intercept, another for age).
+{{content}}
+
+]
+
+--
+
+- We also do not have a correlation parameter, which indicates that it was not estimated.
+
+---
+### Uncorrelated random effects, visually
+
+
+```r
+data.preds$preds.uncorr = predict(rs.fit.bob.uncorr,
+                                  newdata = data.preds)
+
+ggplot(data.preds, aes(x = age.s, y = preds.uncorr, group = state)) +
+    geom_line(color = "cyan4") +
+    labs(x = "Age (z-score)", y = "Predicted Democratic FT score") +
+    theme_classic() +
+    theme(legend.position = "none")
+```
+
+---
+### Uncorrelated random effects, visually
+
+
+```r
+data.preds$preds.uncorr = predict(rs.fit.bob.uncorr,
+                                  newdata = data.preds)
+
+ggplot(data.preds, aes(x = age.s, y = preds.uncorr, group = state)) +
+    geom_line(color = "cyan4") +
+    labs(x = "Age (z-score)", y = "Predicted Democratic FT score") +
+    theme_classic() +
+    theme(legend.position = "none")
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="60%" /&gt;
+
+
+---
+### Joint distribution of random effects, correlated vs uncorrelated
+
+
+```r
+bind_rows(
+    # correlated REs model
+data.frame(ranef(rs.fit.bob)) %&gt;% 
+    dplyr::select(-c(grpvar, condsd)) %&gt;% 
+    pivot_wider(names_from = term, values_from = condval) %&gt;% 
+    mutate(model = "Correlated REs"),
+# uncorrelated REs model
+data.frame(ranef(rs.fit.bob.uncorr)) %&gt;% 
+    dplyr::select(-c(grpvar, condsd)) %&gt;% 
+    pivot_wider(names_from = term, values_from = condval) %&gt;%
+    mutate(model = "Uncorrelated REs")
+) %&gt;% 
+    rename(state = grp,
+           intercept = `(Intercept)`) %&gt;% 
+    ggplot(aes(x = age.s, y = intercept)) +
+    geom_vline(xintercept = 0, color = "grey70") +
+    geom_hline(yintercept = 0, color = "grey70") +
+    geom_point(color = "cyan4") +
+    labs(x = "RE (age)", y = "RE (intercept)") +
+    theme_classic() +
+    facet_wrap(. ~ model)
+```
+
+---
+### Joint distribution of random effects, correlated vs uncorrelated
+
+.center[
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" width="70%" /&gt;
+]
+
+---
+class:highlight-last-item
+### Correlated vs uncorrelated random effects, how to choose?
+
+- There's no hard rule on how to pick between correlated or uncorrelated random effects (sorry).
+
+--
+
+- Part of the choice lies in theoretical consideration: based on your substantive knowledge, does it make sense to assume that your random effects are correlated?
+
+--
+
+- The other part is empirical, as we can conduct a likelihood ratio test to compare models (more on that later).
+
+---
+class:highlight-last-item
+### Some potential issues
+
+When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+
+---
+class:highlight-last-item
+### Some potential issues
+
+When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+
+**Singular fit**
+
+- Sometimes, the variance components of your model will be estimated as exactly zero. This indicates that there is no _excess variability_, beyond that induced by the level-one variance term `\(\varepsilon_{i}\)`, to be explained by your random-effects.
+
+--
+
+- This generally suggests that the model you estimated _overfits_ the data.
+
+---
+class:highlight-last-item
+### Some potential issues
+
+When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+
+**Convergence issues**
+
+- Some complex models - i.e., those with multiple random effects - might not even converge even after scaling the predictors.
+
+--
+
+- Putting priors on hyperparameters helps the algorithm converge, without necessarily having any significant leverage on the results. .bigger.code[`lmer`] does not allow us to do so, but other packages (.bigger.code[`brms`], .bigger.code[`stan`]) do. That's beyond the scope of today's workshop, though.
+
+---
+class: title-slide, center, middle
+
+# Model Fit
+
+---
+class: highlight-last-item
+### Likelihood ratio test
+
+- Allows to test whether improved fit of model is "worth" its added complexity.
+
+--
+
+- Can only test models that are nested within one another.
+
+--
+
+- Random-effects can't be interpreted in terms of p-values or standard-errors. Rather, it is appropriate to use a likelihood ratio test to validate whether their inclusion is statistically warranted.
+
+--
+
+- The null hypothesis being tested, when comparing a single-level regression with a random-intercept model, is that the the variance of the cluster means is equal to zero and thus the random-intercepts should not be included in the model:
+`\(\text{H}_{0}: \sigma^2_{\mu} = 0 \\ \text{H}_{1}: \sigma^2_{\mu} \neq 0\)`
+
+--
+
+- A statistically significant result indicates that the added complexity of the more comprehensive model leads to a significant improvement in the model fit (i.e., the improved model accuracy is "worth" the loss of degrees of freedom).
+
+---
+### Likelihood ratio test, in action
+
+- Let's compare our random intercept model to our model including both a random intercept and a random slope:
+
+--
+
+
+```r
+# re-fit models with ML
+ri.fit.ml &lt;- update(ri.fit, REML = FALSE)
+rs.fit.bob &lt;- update(rs.fit.bob, REML = FALSE)
+
+anova(ri.fit, rs.fit.bob) # put the simpler model first
+```
+
+--
+
+
+```
+## Data: anes
+## Models:
+## ri.fit: ft_dem ~ 1 + age + female + race + (1 | state)
+## rs.fit.bob: ft_dem ~ 1 + age.s + female + race + (1 + age.s | state)
+##            npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)    
+## ri.fit        8 374083 374152 -187033   374067                         
+## rs.fit.bob   10 374069 374155 -187025   374049 17.683  2  0.0001446 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+--
+
+- The results support our use of a more complex model including both random intercepts and slopes.
+
+---
+class: highlight-last-item
+### Likelihood ratio test, in action (cont'd)
+
+- Remember our discussion of correlated vs uncorrelated random effects? The choice can be guided by empirics, too.
+
+--
+
+- Since uncorrelated random effects model don't include a covariance parameter for random-effects, they're actually a simpler version of correlated random effects models.
+
+--
+
+- This allows us to use a LRT to compare them.
+
+---
+class: highlight-last-item
+### Likelihood ratio test, in action (cont'd)
+
+
+```r
+rs.fit.bob &lt;- update(rs.fit.bob, REML = FALSE)
+rs.fit.bob.uncorr &lt;- update(rs.fit.bob.uncorr, REML = FALSE)
+
+anova(rs.fit.bob.uncorr, rs.fit.bob) # put the simpler model first
+```
+
+--
+
+
+```
+## Data: anes
+## Models:
+## rs.fit.bob.uncorr: ft_dem ~ 1 + age.s + female + race + (1 | state) + (0 + age.s | state)
+## rs.fit.bob: ft_dem ~ 1 + age.s + female + race + (1 + age.s | state)
+##                   npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)   
+## rs.fit.bob.uncorr    9 374077 374154 -187030   374059                        
+## rs.fit.bob          10 374069 374155 -187025   374049 9.7899  1   0.001755 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+--
+
+- The results support our use of a more complex model including a covariance parameter for the random effects.
+
+---
+class: title-slide, center, middle
+
+# Final thoughts
+
+---
+class: highlight-last-item
+### Limitations
+
+--
+
+- The main limitation I can think of when using .bigger.code[`lme4`] is its inability to account for autocorrelation, which is a non-negligible issue when using panel data. The alternative package .bigger.code[`nlme`] allows you to do so.
+
+---
+class: highlight-last-item
+### Extensions
+
+- We only focused on models including two levels (units nested within clusters). Random effects model can also accommodate multiple levels of clustering (units nested within clusters that are themselves nested within broader clusters). 
+
+--
+
+    - A typical example is that of students (first level) who are nested within classrooms (second level) that are nested within schools (third level).
+    
+    - But these models are very statistically demanding, you need to have a lot of data to estimate them.
+
+--
+
+- Mixed-effects models can also accommodate discrete and count outcome variables. These models are known as generalized linear mixed models (GLMMs). These can also be estimated using .bigger.code[`lme4`].
+
+--
+
+- Bayesian methods can be useful to further regularize the random effects and speed up computation.
+
+&lt;style type="text/css"&gt;
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+&lt;/style&gt;
+
+---
+class: title-slide, center, middle
+
+# Thank you!
+
+---
+### References
+
+Fox, John (2016). _Applied Regression Analysis &amp; Generalized Linear Models (3rd Ed.)_. Los Angeles: Sage Publications. 
+
+Gelman, Andrew and Jennifer Hill (2006). _Data Analysis Using Regression and Multilevel/Hierarchical Models_. Cambridge: Cambridge University Press.
+
+McElreath, Richard (2016). _Statistical Rethinking: A Bayesian Course with Examples in R and Stan_. New York: Chapman and Hall/CRC.
+
+Snijders, Tom A.B. and Roel J. Bosker (2012). _Multilevel Analysis: An Introduction to Basic and Advanced Multilevel Modeling (2nd Ed.)_. Los Angeles: Sage Publications.
+
+Wasserstein, Ronald L., Allen L. Schirm and Nicole A. Lazar (2019). "Moving to a World Beyond 'p&lt;.05'." _The American Statistician_, 73(sup1): 1-19.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
