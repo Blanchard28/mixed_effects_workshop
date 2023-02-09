@@ -878,7 +878,7 @@ broom.mixed::tidy(ri.fit, effects = "ran_vals") %&gt;%
     geom_point(color = "cyan4") +
     geom_errorbar(aes(ymin = estimate - 1.96*std.error, ymax = estimate + 1.96*std.error), 
                   width = 0, color = "cyan4") +
-    labs(x = "State", y = "RE estimate") +
+    labs(x = "State", y = "Random effect") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
     theme_classic() +
     coord_flip()
@@ -1488,8 +1488,9 @@ data.frame(ranef(rs.fit.bob)) %&gt;%
 class:highlight-last-item
 ### Joint distribution of random effects
 
-&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="70%" /&gt;
-
+.center[
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="60%" /&gt;
+]
 ---
 class:highlight-last-item
 ### A model with uncorrelated random effects
@@ -1855,6 +1856,10 @@ class: highlight-last-item
 ---
 class: highlight-last-item
 ### Extensions
+
+- Can include multiple random slopes in a model.
+
+--
 
 - We only focused on models including two levels (units nested within clusters). Random effects model can also accommodate multiple levels of clustering (units nested within clusters that are themselves nested within broader clusters). 
 
