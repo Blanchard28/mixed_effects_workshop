@@ -3,4 +3,4 @@ This is the repository containing the files for the mixed effects models with R 
 
 Please download the code and data before we start the presentation. All the code presented in the slides is included (in order) in the mixed_effects_code.R file. So it should be easy to run the code while following along the presentation.
 
-To see the slides, go to: https://blanchard28.github.io/mixed_effects_workshop/#1
+To see the slides, go to: https://blanchard28.github.io/mixed_effects_workshop
