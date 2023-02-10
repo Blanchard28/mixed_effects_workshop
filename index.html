@@ -230,8 +230,20 @@ class: highlight-last-item
     - If cluster is country, can combine country-level random effects with measures of population, economic performance, etc.
     
     - Fixed effects models would drop the covariates that are fixed within clusters due to collinearity.
+    
+---
+class: highlight-last-item
+### Benefits of mixed-effects models/partial pooling
 
---
+- Provides information on how much variation is occurring at each level (e.g., are voting turnout rates mainly dictated by individual or country-specific factors?).
+
+- Allows to account for cluster-specific heterogeneity all the while estimating point estimates of covariates that are fixed within clusters. Examples:
+
+    - If cluster is respondent (e.g., panel data), can account for respondent-specific heterogeneity (respondent random intercept) all the while estimating the impact of parameters that are fixed within respondents (e.g., gender, PID).
+    
+    - If cluster is country, can combine country-level random effects with measures of population, economic performance, etc.
+    
+    - Fixed effects models would drop the covariates that are fixed within clusters due to collinearity.
 
 - Allows to estimate the correlation of random-effects, which can provide substantive insights.
 
@@ -275,7 +287,21 @@ class: highlight-last-item
     
     - Best to have many clusters with few observations than few clusters with many observations.
 
---
+---
+class: highlight-last-item
+### When to use mixed-effects models
+
+- When you have **clustered** data.
+
+- Most useful when your clusters represent a sample of a broader population of clusters.
+
+- Most useful when you have an **imbalanced design** and some cluster means may be unreliable.
+
+- But... you need to have many clusters (bare minimum 10, ideally 30+).
+
+    - Lots of observations per cluster does not compensate for small number of clusters.
+    
+    - Best to have many clusters with few observations than few clusters with many observations.
 
 - Unless you are running a large-scale experiment, typically for correlational analysis.
 
@@ -424,8 +450,6 @@ class: highlight-last-item
 
 --
 
-
-
 - Let's take a random sample of only 1% of observations in each cluster and see how that influences the amount of shrinkage we get:
 
 ---
@@ -433,7 +457,7 @@ class: highlight-last-item
 ### The random intercept model, visually (cont'd)
 
 .pull-left[
-&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
 ]
 
 --
@@ -889,7 +913,7 @@ broom.mixed::tidy(ri.fit, effects = "ran_vals") %&gt;%
 Can also use a plot
 
 .center[
-&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="70%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="65%" /&gt;
 ]
 
 ---
@@ -900,7 +924,7 @@ Let's plot state-level predictions to compare our FE and RE models.
 --
 
 .pull-left[
-&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="95%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="95%" /&gt;
 ]
 
 --
@@ -922,7 +946,7 @@ Let's try the same thing, but using only observations from the 1980 ANES `\((n =
 --
 
 .pull-left[
-&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="95%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="95%" /&gt;
 ]
 
 --
@@ -950,7 +974,7 @@ Let `\(\gamma_{j}\)` be the amount of shrinkage we get for state `\(j\)`, where 
 --
 
 .left[
-&lt;img src="index_files/figure-html/unnamed-chunk-13-1.png" width="70%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -1111,7 +1135,7 @@ bind_rows(
 ### Crossed random effects, visually
 
 .center[
-&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="70%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -1432,7 +1456,7 @@ class:highlight-last-item
 ### Random slopes, visually (Spaghetti plot)
 
 .pull-left[
-&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
 ]
 
 --
@@ -1489,7 +1513,7 @@ class:highlight-last-item
 ### Joint distribution of random effects
 
 .center[
-&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="60%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" width="60%" /&gt;
 ]
 ---
 class:highlight-last-item
@@ -1505,11 +1529,11 @@ class:highlight-last-item
 
 - Be careful though: if you make the assumption that random effects are independent of one another when in fact they are not, you are discarding useful information that may lead to less precisely estimated variance components..fn[&lt;sup&gt;1&lt;/sup&gt;]
 
-.footnote[&lt;sup&gt;1&lt;/sup&gt; For an extended discussion of correlated vs uncorrelated random effects, see https://rpubs.com/yjunechoe/correlationsLMEM.]
-
 --
 
 - That said, if you do want to do so, you simply call separately the parameters that vary across groups inside your formula argument. Let's see how this works with our model including random effects for the intercept and age.
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt; For an extended discussion of correlated vs uncorrelated random effects, see https://rpubs.com/yjunechoe/correlationsLMEM.]
 
 ---
 class:highlight-last-item
@@ -1646,7 +1670,7 @@ ggplot(data.preds, aes(x = age.s, y = preds.uncorr, group = state)) +
     theme(legend.position = "none")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="60%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="60%" /&gt;
 
 
 ---
@@ -1681,7 +1705,7 @@ data.frame(ranef(rs.fit.bob.uncorr)) %&gt;%
 ### Joint distribution of random effects, correlated vs uncorrelated
 
 .center[
-&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" width="70%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -1793,6 +1817,10 @@ anova(ri.fit, rs.fit.bob) # put the simpler model first
 
 --
 
+&lt;img src="index_files/elipse.png"
+     width="170px" height="70px"
+     style="position:absolute; right:553px; top:380px;"&gt;
+
 - The results support our use of a more complex model including both random intercepts and slopes.
 
 ---
@@ -1838,6 +1866,10 @@ anova(rs.fit.bob.uncorr, rs.fit.bob) # put the simpler model first
 
 --
 
+&lt;img src="index_files/elipse.png"
+     width="165px" height="60px"
+     style="position:absolute; right:500px; top:285px;"&gt;
+
 - The results support our use of a more complex model including a covariance parameter for the random effects.
 
 ---
@@ -1868,8 +1900,18 @@ class: highlight-last-item
     - A typical example is that of students (first level) who are nested within classrooms (second level) that are nested within schools (third level).
     
     - But these models are very statistically demanding, you need to have a lot of data to estimate them.
+    
+---
+class: highlight-last-item
+### Extensions
 
---
+- Can include multiple random slopes in a model.
+
+- We only focused on models including two levels (units nested within clusters). Random effects model can also accommodate multiple levels of clustering (units nested within clusters that are themselves nested within broader clusters). 
+
+    - A typical example is that of students (first level) who are nested within classrooms (second level) that are nested within schools (third level).
+    
+    - But these models are very statistically demanding, you need to have a lot of data to estimate them.
 
 - Mixed-effects models can also accommodate discrete and count outcome variables. These models are known as generalized linear mixed models (GLMMs). These can also be estimated using .bigger.code[`lme4`].
 
