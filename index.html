@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Mixed-Effects Models with R</title>
+    <title>Mixed Effects Models with R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Maxime Blanchard | CSDC Methods Workshop" />
     <script src="index_files/header-attrs/header-attrs.js"></script>
@@ -15,7 +15,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Mixed-Effects Models with R
+# Mixed Effects Models with R
 ]
 .author[
 ### Maxime Blanchard | CSDC Methods Workshop
@@ -213,7 +213,7 @@ class: highlight-last-item
 
 ---
 class: highlight-last-item
-### Benefits of mixed-effects models/partial pooling
+### Benefits of mixed effects models/partial pooling
 
 --
 
@@ -233,7 +233,7 @@ class: highlight-last-item
     
 ---
 class: highlight-last-item
-### Benefits of mixed-effects models/partial pooling
+### Benefits of mixed effects models/partial pooling
 
 - Provides information on how much variation is occurring at each level (e.g., are voting turnout rates mainly dictated by individual or country-specific factors?).
 
@@ -245,11 +245,11 @@ class: highlight-last-item
     
     - Fixed effects models would drop the covariates that are fixed within clusters due to collinearity.
 
-- Allows to estimate the correlation of random-effects, which can provide substantive insights.
+- Allows to estimate the correlation of random effects, which can provide substantive insights.
 
 ---
 class: highlight-last-item
-### Benefits of mixed-effects models/partial pooling (cont'd)
+### Benefits of mixed effects models/partial pooling (cont'd)
 
 - Provides a compromise between complete and no pooling approaches, that both make it hard to extrapolate beyond the sample under consideration. Complete pooling does not account for cluster-specific heterogeneity, whereas fixed effects will tend to overfit the data, providing poor out-of-sample predictions.
 
@@ -263,7 +263,7 @@ class: highlight-last-item
 
 ---
 class: highlight-last-item
-### When to use mixed-effects models
+### When to use mixed effects models
 
 --
 
@@ -289,7 +289,7 @@ class: highlight-last-item
 
 ---
 class: highlight-last-item
-### When to use mixed-effects models
+### When to use mixed effects models
 
 - When you have **clustered** data.
 
@@ -484,7 +484,7 @@ The random slope model is an extension of the random intercept model where one o
 
 --
 
-Formally, for a model with a single random-slope:
+Formally, for a model with a single random slope:
 
 `$$y_{ij} = \beta_{0} + \beta_{1}x_{1ij} + \mu_{0j} + \mu_{1j}x_{1ij} + \varepsilon_{ij}$$`
 
@@ -547,7 +547,7 @@ class: highlight-last-item
 
 --
 
-- You can also estimate models using maximum likelihood (ML), but it provides biased estimates of random-effects (although the difference is not practically significant when using simple models and/or very informative data).
+- You can also estimate models using maximum likelihood (ML), but it provides biased estimates of random effects (although the difference is not practically significant when using simple models and/or very informative data).
 
 --
 
@@ -612,7 +612,7 @@ Formally,
 where `\(i\)` indexes respondents and `\(j\)` indexes states in which they live.
 
 ---
-### Estimating a random-intercept model (cont'd)
+### Estimating a random intercept model (cont'd)
 
 - Let's start by loading the data
 
@@ -833,6 +833,10 @@ class: highlight-last-item
 ```
 ]
 
+&lt;img src="index_files/elipse.png"
+     width="205px" height="250px"
+     style="position:absolute; right:575px; top:408px;"&gt;
+
 --
 
 .pull-right[
@@ -985,11 +989,11 @@ class: highlight-last-item
 
 --
 
-- Since random-effects are not fixed parameters, we can't say that we "estimate" them. Thus rather than referring to them as estimates, we commonly refer to them as the **B**est **L**inear **U**nbiased **P**redictors (BLUPs) of the cluster-level variance. Typically, people will just call them "variance components".
+- Since random effects are not fixed parameters, we can't say that we "estimate" them. Thus rather than referring to them as estimates, we commonly refer to them as the **B**est **L**inear **U**nbiased **P**redictors (BLUPs) of the cluster-level variance. Typically, people will just call them "variance components".
 
 ---
 class: highlight-last-item
-### Crossed random-effects
+### Crossed random effects
 
 --
 
@@ -997,7 +1001,7 @@ class: highlight-last-item
 
 --
 
-- We will do so estimating a random-intercept model on our ANES data where there is a variance component at the state-level and another variance component at the cohort-level (i.e., respondents' decade of birth). These are crossed random effects as respondents from a given state may belong to different cohorts and vice versa.
+- We will do so estimating a random intercept model on our ANES data where there is a variance component at the state-level and another variance component at the cohort-level (i.e., respondents' decade of birth). These are crossed random effects as respondents from a given state may belong to different cohorts and vice versa.
 
 --
 
@@ -1011,7 +1015,7 @@ summary(crossed.re.fit,
 ```
 
 ---
-### Crossed random-effects (cont'd)
+### Crossed random effects (cont'd)
 
 .pull-left[
 
@@ -1049,7 +1053,7 @@ summary(crossed.re.fit,
 
 ---
 class: highlight-last-item
-### Crossed random-effects (cont'd)
+### Crossed random effects (cont'd)
 
 .pull-left[
 
@@ -1176,7 +1180,7 @@ rs.fit &lt;- lmer(ft_dem ~ 1 + age + female + race +
 
 --
 
-- Convergence issues are relatively frequent when using mixed-effects models given the fairly intricate computations that they involve. Fortunately, most of the time there exist relatively simple fixes.
+- Convergence issues are relatively frequent when using mixed effects models given the fairly intricate computations that they involve. Fortunately, most of the time there exist relatively simple fixes.
 
 ---
 class:highlight-last-item
@@ -1252,7 +1256,7 @@ class:highlight-last-item
 --
 
 .pull-right[
-- This time, the optimizer could evaluate the gradient thanks to our more "workable" distribution of predictors, which shows why you should always scale your predictors before estimating a mixed-effects model.
+- This time, the optimizer could evaluate the gradient thanks to our more "workable" distribution of predictors, which shows why you should always scale your predictors before estimating a mixed effects model.
 {{content}}
 
 ]
@@ -1431,6 +1435,10 @@ class: highlight-last-item
 
 - Important to note: the Corr column, which indicates the correlation of the random effects. Remember that these are assumed to follow a multivariate normal distribution, so this parameter informs us about their covariance.
 
+&lt;img src="index_files/elipse.png"
+     width="100px" height="100px"
+     style="position:absolute; right:765px; top:330px;"&gt;
+
 ---
 ### Random slopes, visually (Spaghetti plot)
 
@@ -1463,7 +1471,7 @@ class:highlight-last-item
 
 .pull-right[
 
-- We see a funnel-like shape because the two random-effects are strongly correlated (.86), so the states with the largest intercepts also tend to have the most positive slopes for .bigger.code[`age.s`] and vice versa.
+- We see a funnel-like shape because the two random effects are strongly correlated (.86), so the states with the largest intercepts also tend to have the most positive slopes for .bigger.code[`age.s`] and vice versa.
 {{content}}
 
 ]
@@ -1726,17 +1734,17 @@ class:highlight-last-item
 class:highlight-last-item
 ### Some potential issues
 
-When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+When estimating complex random effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
 
 ---
 class:highlight-last-item
 ### Some potential issues
 
-When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+When estimating complex random effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
 
 **Singular fit**
 
-- Sometimes, the variance components of your model will be estimated as exactly zero. This indicates that there is no _excess variability_, beyond that induced by the level-one variance term `\(\varepsilon_{i}\)`, to be explained by your random-effects.
+- Sometimes, the variance components of your model will be estimated as exactly zero. This indicates that there is no _excess variability_, beyond that induced by the level-one variance term `\(\varepsilon_{i}\)`, to be explained by your random effects.
 
 --
 
@@ -1746,7 +1754,7 @@ When estimating complex random-effects models (especially in conjunction with un
 class:highlight-last-item
 ### Some potential issues
 
-When estimating complex random-effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
+When estimating complex random effects models (especially in conjunction with uninformative data), some issues can arise given the fairly intricate computations involved.
 
 **Convergence issues**
 
@@ -1773,11 +1781,11 @@ class: highlight-last-item
 
 --
 
-- Random-effects can't be interpreted in terms of p-values or standard-errors. Rather, it is appropriate to use a likelihood ratio test to validate whether their inclusion is statistically warranted.
+- Random effects can't be interpreted in terms of p-values or standard-errors. Rather, it is appropriate to use a likelihood ratio test to validate whether their inclusion is statistically warranted.
 
 --
 
-- The null hypothesis being tested, when comparing a single-level regression with a random-intercept model, is that the the variance of the cluster means is equal to zero and thus the random-intercepts should not be included in the model:
+- The null hypothesis being tested, when comparing a single-level regression with a random intercept model, is that the the variance of the cluster means is equal to zero and thus the random intercepts should not be included in the model:
 `\(\text{H}_{0}: \sigma^2_{\mu} = 0 \\ \text{H}_{1}: \sigma^2_{\mu} \neq 0\)`
 
 --
@@ -1831,7 +1839,7 @@ class: highlight-last-item
 
 --
 
-- Since uncorrelated random effects model don't include a covariance parameter for random-effects, they're actually a simpler version of correlated random effects models.
+- Since uncorrelated random effects model don't include a covariance parameter for random effects, they're actually a simpler version of correlated random effects models.
 
 --
 
@@ -1913,7 +1921,7 @@ class: highlight-last-item
     
     - But these models are very statistically demanding, you need to have a lot of data to estimate them.
 
-- Mixed-effects models can also accommodate discrete and count outcome variables. These models are known as generalized linear mixed models (GLMMs). These can also be estimated using .bigger.code[`lme4`].
+- Mixed effects models can also accommodate discrete and count outcome variables. These models are known as generalized linear mixed models (GLMMs). These can also be estimated using .bigger.code[`lme4`].
 
 --
 
