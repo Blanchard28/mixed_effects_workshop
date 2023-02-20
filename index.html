@@ -734,7 +734,7 @@ summary(ri.fit,
 
 --
 
-- It provides information on the variance of each random effect we specify, along with the residual variance at the individual-level (i.e. the error term).
+- It provides information on the variance of each random effect we specify, along with the residual variance at the unit-level (i.e. the error term).
 {{content}}
 
 --
@@ -744,7 +744,7 @@ summary(ri.fit,
 
 --
 
-- What this is telling us here is that there is some residual variance at the state-level, but it is of very small magnitude compared to the residual variance at the individual-level.
+- What this is telling us here is that there is some residual variance at the state-level, but it is of very small magnitude compared to the residual variance at the unit-level.
 
 ---
 class: highlight-last-item
@@ -1097,12 +1097,12 @@ class: highlight-last-item
 
 --
 
-- The residual variance at the cohort level is much greater than the variance at the state level, but this could be deceiving. Given that we have only 13 cohorts, the model is likely to overestimate the cross-cohort variance.
+- The residual variance at the cohort-level is much greater than the variance at the state-level, but this could be deceiving. Given that we have only 13 cohorts, the model is likely to overestimate the cross-cohort variance.
 {{content}}
 
 --
 
-- Still, the variance at the individual-level remains much greater.
+- Still, the variance at the unit-level remains much greater.
 
 ---
 ### Crossed random effects, visually
@@ -1531,11 +1531,11 @@ class:highlight-last-item
 
 --
 
-- You can also estimate a model where the random effects are not constrained to be correlated, if you have reasons to believe that your random effects are independent of one another.
+- There's an alternative option, though: uncorrelated random effects. In the latter case, your model does not estimate the covariance of your random effects and they are rather assumed to be distributed as independent normal distributions. May be worth considering if you have reasons to believe that your random effects are independent of one another.
 
 --
 
-- Be careful though: if you make the assumption that random effects are independent of one another when in fact they are not, you are discarding useful information that may lead to less precisely estimated variance components..fn[&lt;sup&gt;1&lt;/sup&gt;]
+- Be careful though: if you make the assumption that random effects are independent of one another when in fact they are not, you are discarding useful information, which may lead to less precisely estimated variance components..fn[&lt;sup&gt;1&lt;/sup&gt;]
 
 --
 
@@ -1680,7 +1680,6 @@ ggplot(data.preds, aes(x = age.s, y = preds.uncorr, group = state)) +
 
 &lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="60%" /&gt;
 
-
 ---
 ### Joint distribution of random effects, correlated vs uncorrelated
 
@@ -1724,7 +1723,7 @@ class:highlight-last-item
 
 --
 
-- Part of the choice lies in theoretical consideration: based on your substantive knowledge, does it make sense to assume that your random effects are correlated?
+- Part of the choice lies in theoretical consideration: based on your substantive knowledge, does it make sense to assume that your random effects are correlated (i.e., are sampled from a multivariate distribution)? Or is it more likely that their are independent of one another?
 
 --
 
@@ -1839,11 +1838,11 @@ class: highlight-last-item
 
 --
 
-- Since uncorrelated random effects model don't include a covariance parameter for random effects, they're actually a simpler version of correlated random effects models.
+- Since uncorrelated random effects models don't include a covariance parameter for random effects, they're actually a simpler version of correlated random effects models.
 
 --
 
-- This allows us to use a LRT to compare them.
+- This allows us to use an LRT to compare them.
 
 ---
 class: highlight-last-item
